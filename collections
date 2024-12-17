@@ -1,0 +1,91 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+public class ListPerformanceService {
+
+    public static void main(String[] args) {
+        // Параметры исследования
+        int c = 100; // Коэффициент, определяющий объем коллекции
+        int n = 1000; // Размер пакета (количество элементов для операций)
+        // Исследуем с ArrayList
+        List<Integer> arrayList = new ArrayList<>();
+        System.out.println("Testing ArrayList:");
+        performTests(arrayList, c, n);
+
+        // Исследуем с LinkedList
+        List<Integer> linkedList = new LinkedList<>();
+        System.out.println("Testing LinkedList:");
+        performTests(linkedList, c, n);
+    }
+
+    // Метод для проведения тестов
+    private static void performTests(List<Integer> list, int c, int n) {
+        System.out.println("=== Starting Tests ===");
+        // Подсчет времени на добавление элементов в конец
+        long timeAddToEnd = measureTime(() -> addToEnd(list, c, n));
+        System.out.println("Time to add to end: " + timeAddToEnd + " ms");
+
+        // Подсчет времени на удаление элементов с конца
+        long timeRemoveFromEnd = measureTime(() -> removeFromEnd(list, n));
+        System.out.println("Time to remove from end: " + timeRemoveFromEnd + " ms");
+
+        // Подсчет времени на добавление элементов в случайное место
+        long timeAddToRandom = measureTime(() -> addToRandom(list, c, n));
+        System.out.println("Time to add to random position: " + timeAddToRandom + " ms");
+
+        // Подсчет времени на удаление элементов из случайного места
+        long timeRemoveFromRandom = measureTime(() -> removeFromRandom(list, n));
+        System.out.println("Time to remove from random position: " + timeRemoveFromRandom + " ms");
+    }
+
+    // Метод для добавления элементов в конец коллекции
+    private static void addToEnd(List<Integer> list, int c, int n) {
+        Random random = new Random();
+        for (int i = 0; i < c; i++) {
+            for (int j = 0; j < n; j++) {
+                list.add(random.nextInt());
+            }
+        }
+    }
+
+    // Метод для удаления элементов с конца коллекции
+    private static void removeFromEnd(List<Integer> list, int n) {
+        for (int i = 0; i < n; i++) {
+            if (!list.isEmpty()) {
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+
+    // Метод для добавления элементов в случайное место коллекции
+    private static void addToRandom(List<Integer> list, int c, int n) {
+        Random random = new Random();
+        for (int i = 0; i < c; i++) {
+            for (int j = 0; j < n; j++) {
+                int randomIndex = list.isEmpty() ? 0 : random.nextInt(list.size());
+                list.add(randomIndex, random.nextInt());
+            }
+        }
+    }
+
+    // Метод для удаления элементов из случайного места коллекции
+    private static void removeFromRandom(List<Integer> list, int n) {
+        Random random = new Random();
+        for (int i = 0; i < n; i++) {
+            if (!list.isEmpty()) {
+                int randomIndex = random.nextInt(list.size());
+                list.remove(randomIndex);
+            }
+        }
+    }
+
+    // Метод для измерения времени выполнения операции
+    private static long measureTime(Runnable task) {
+        long startTime = System.currentTimeMillis();
+        task.run();
+        long endTime = System.currentTimeMillis();
+        return endTime - startTime;
+    }
+}
